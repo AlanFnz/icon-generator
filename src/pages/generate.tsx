@@ -4,14 +4,24 @@ import { useState } from "react";
 
 import FormGroup from "~/components/FormGroup";
 import Input from "~/components/Input";
+import { api } from "~/utils/api";
 
 const GeneratePage: NextPage = () => {
   const [form, setForm] = useState({
     prompt: "",
   });
 
+  const generateIcon = api.generate.generateIcon.useMutation({
+    onSuccess(data: unknown) {
+      console.log("mutation finished", data);
+    },
+  });
+
   function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
+    generateIcon.mutate({
+      prompt: form.prompt,
+    });
   }
 
   function updateForm(key: string) {
