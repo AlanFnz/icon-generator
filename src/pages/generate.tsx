@@ -9,7 +9,7 @@ import Input from "~/components/Input";
 import { api } from "~/utils/api";
 
 const GeneratePage: NextPage = () => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{ prompt: string }>({
     prompt: "",
   });
 
@@ -29,14 +29,10 @@ const GeneratePage: NextPage = () => {
     });
   }
 
-  function updateForm(key: string) {
-    return function (e: React.ChangeEvent<HTMLInputElement>) {
-      setForm({
-        ...form,
-        [key]: e.target.value,
-      });
-    };
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prevForm) => ({ ...prevForm, [name]: value }));
+  };
 
   return (
     <>
@@ -57,8 +53,13 @@ const GeneratePage: NextPage = () => {
         </Button>
         <form className="flex flex-col gap-4" onSubmit={handleFormSubmit}>
           <FormGroup>
-            <label>Prompt</label>
-            <Input value={form.prompt} onChange={updateForm("prompt")}></Input>
+            <label htmlFor="prompt">Prompt</label>
+            <Input
+              id="prompt"
+              name="prompt"
+              value={form.prompt}
+              onChange={handleInputChange}
+            ></Input>
           </FormGroup>
           <Button>Submit</Button>
         </form>
