@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
@@ -12,13 +13,15 @@ const GeneratePage: NextPage = () => {
   const [form, setForm] = useState<{ prompt: string }>({
     prompt: "",
   });
+  const [imageUrl, setImageUrl] = useState("");
 
   const session = useSession();
   const isLoggedIn = !!session.data;
 
   const generateIcon = api.generate.generateIcon.useMutation({
-    onSuccess(data: unknown) {
-      console.log("mutation finished", data);
+    onSuccess(data) {
+      if (!data.imageUrl) return;
+      setImageUrl(data.imageUrl);
     },
   });
 
@@ -63,6 +66,8 @@ const GeneratePage: NextPage = () => {
           </FormGroup>
           <Button>Submit</Button>
         </form>
+
+        {imageUrl && <img src={imageUrl} alt={'generated image'}/>}
       </main>
     </>
   );

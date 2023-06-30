@@ -1,7 +1,15 @@
 import { z } from "zod";
 
+import { Configuration, OpenAIApi } from "openai";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { env } from "~/env.mjs";
+
+const configuration = new Configuration({
+  apiKey: env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
 
 export const generateRouter = createTRPCRouter({
   generateIcon: protectedProcedure
@@ -11,8 +19,6 @@ export const generateRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("mutation (BE): ", input.prompt);
-
       const { count } = await ctx.prisma.user.updateMany({
         where: {
           id: ctx.session.user.id,
@@ -33,9 +39,21 @@ export const generateRouter = createTRPCRouter({
           message: "you do not have enough credits",
         });
       }
+      let url;
+      try {
+        const response = await openai.createImage({
+          prompt: input.prompt,
+          n: 1,
+          size: "1024x1024",
+        });
+
+        url = response.data.data[0]?.url;
+      } catch (error) {
+        console.log("error", error);
+      }
 
       return {
-        message: "success",
+        imageUrl: url,
       };
     }),
 });
