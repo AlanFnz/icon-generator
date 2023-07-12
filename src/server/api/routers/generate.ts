@@ -11,6 +11,19 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+async function generateIcon(prompt: string): Promise<string | undefined> {
+  if (env.MOCK_DALLE === "true") {
+    return "https://dummyimage.com/1024x1024/000000/ffffff";
+  } else {
+    const response = await openai.createImage({
+      prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+    return response.data.data[0]?.url;
+  }
+}
+
 export const generateRouter = createTRPCRouter({
   generateIcon: protectedProcedure
     .input(
@@ -39,18 +52,8 @@ export const generateRouter = createTRPCRouter({
           message: "you do not have enough credits",
         });
       }
-      let url;
-      try {
-        const response = await openai.createImage({
-          prompt: input.prompt,
-          n: 1,
-          size: "1024x1024",
-        });
 
-        url = response.data.data[0]?.url;
-      } catch (error) {
-        console.log("error", error);
-      }
+      const url = await generateIcon(input.prompt);
 
       return {
         imageUrl: url,
