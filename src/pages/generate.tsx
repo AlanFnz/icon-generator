@@ -30,6 +30,7 @@ const GeneratePage: NextPage = () => {
     generateIcon.mutate({
       prompt: form.prompt,
     });
+    setForm({ prompt: "" });
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +68,7 @@ const GeneratePage: NextPage = () => {
           <Button>Submit</Button>
         </form>
 
-        {imageUrl && <img src={imageUrl} alt={'generated image'}/>}
+        {imageUrl && <img src={imageUrl} alt={"generated image"} />}
       </main>
     </>
   );
