@@ -2,6 +2,7 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import Image from "next/image";
 import { useState } from "react";
 import Button from "~/components/Button";
 
@@ -68,7 +69,7 @@ const GeneratePage: NextPage = () => {
           <Button>Submit</Button>
         </form>
 
-        {imageUrl && <img src={imageUrl} alt={"generated image"} />}
+        {imageUrl && <Image src={imageUrl} alt={"generated image"} />}
       </main>
     </>
   );
